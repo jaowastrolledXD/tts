@@ -10,7 +10,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 const API = 'https://api.vsync.lat';
 const TOKEN = process.env.VSYNC_BOT_TOKEN;
-const PYTHON = process.env.PYTHON_PATH || 'python';
+const PYTHON = process.env.PYTHON_PATH || (process.platform === 'win32' ? 'python' : 'python3');
 const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
 const TEXT_CHANNEL_ONLY = (process.env.TTS_TEXT_CHANNEL_ID || '').trim();
 const MAX_CHARS = Math.max(80, Math.min(600, Number(process.env.TTS_MAX_CHARS || 280)));
@@ -185,6 +185,20 @@ function parseIdSet(value) {
   return new Set(String(value || '').split(/[\s,;]+/).map((part) => part.trim()).filter(Boolean));
 }
 
+// Limita caches temporários para não acumularem indefinidamente em servidores ativos.
+function pruneTimedCache(cache, maxSize, maxAgeMs) {
+  const now = Date.now();
+  for (const [key, value] of cache) {
+    const at = typeof value === 'number' ? value : value?.at;
+    if (Number.isFinite(at) && now - at > maxAgeMs) cache.delete(key);
+  }
+  while (cache.size > maxSize) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey === undefined) break;
+    cache.delete(oldestKey);
+  }
+}
+
 function normalizeRoleIds(value) {
   if (Array.isArray(value)) {
     return [...new Set(value.map((item) => {
@@ -242,6 +256,7 @@ async function memberRoleIds(guildId, userId, message = null) {
   const embedded = rolesFromObject(message);
   if (embedded !== null) return embedded;
 
+  pruneTimedCache(memberRoleCache, 1000, 10_000);
   const cacheKey = `${guildId}:${userId}`;
   const cached = memberRoleCache.get(cacheKey);
   if (cached && Date.now() - cached.at < 10_000) return cached.roles;
@@ -450,6 +465,7 @@ async function canSpeakByRolePolicy(message) {
 
   const roles = await memberRoleIds(message.guildId, message.authorId, message);
   if (!Array.isArray(roles)) {
+    pruneTimedCache(roleLookupWarnings, 100, 60_000);
     const key = String(message.guildId);
     if (Date.now() - (roleLookupWarnings.get(key) || 0) > 15_000) {
       roleLookupWarnings.set(key, Date.now());
@@ -963,10 +979,12 @@ function getVoiceMap(snapshot) {
 }
 
 async function getGuildSnapshot(guildId, force = false) {
+  pruneTimedCache(guildSnapshotCache, 10, 5_000);
   const cached = guildSnapshotCache.get(guildId);
   if (!force && cached && Date.now() - cached.at < 900) return cached.data;
   const data = await apiFetch(`/guilds/${encodeURIComponent(guildId)}`);
   guildSnapshotCache.set(guildId, { at: Date.now(), data });
+  pruneTimedCache(guildSnapshotCache, 10, 5_000);
   return data;
 }
 
@@ -1735,6 +1753,7 @@ console.log('Iniciando bot TTS para VSync...');
 console.log(`Leitura automática: ativada${TEXT_CHANNEL_ONLY ? ` (somente canal ${TEXT_CHANNEL_ONLY})` : ' (todos os canais visíveis)'}.`);
 console.log(`Voz padrão: Francisca. Velocidade da fala: ${TTS_SPEED.toFixed(2)}x. Limite da fila: ${TTS_QUEUE_LIMIT}. Use !tts ajuda ou /tts ajuda para ver os comandos; !voz lista também funciona.`);
 console.log(`Saída automática da call: ${TTS_IDLE_LEAVE_MINUTES} minuto(s) sem mensagens de TTS.`);
+console.log(`[runtime] Python: ${PYTHON}; FFmpeg: ${FFMPEG}. Na Discloud, as dependências são instaladas pelo discloud.config.`);
 console.log('[TTS] Vozes Fish Audio: requerem FISH_API_KEY; Lhays: proxy comunitário TikTok. Voz local do Windows é apenas fallback.');
 console.log('[ACL] A edição de whitelist/blacklist é permitida ao dono/admin do servidor; IDs no .env podem ser usados como exceção global.');
 console.log('Quando você mandar uma mensagem, procure a linha [chat] MESSAGE_CREATE no terminal.');
