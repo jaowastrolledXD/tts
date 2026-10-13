@@ -1,0 +1,10 @@
+ATUALIZAÇÃO: EXPLOSÃO GALÁCTICA ESTILO ANIME
+
+A frase "Explosão Galáctica" tem uma direção de atuação especial, crescendo até um grito sustentado. Para esse clímax, o bot usa a API REST para aplicar as tags do Fish Audio S2.1 e aplica compressão/ganho controlados com limitador para deixar o grito mais presente sem estourar o áudio.
+
+Para aproximar a fala de Saint Seiya, selecione a voz Saga de Gêmeos:
+!tts voz saga
+
+As tags são instruções para o gerador de áudio e não devem ser faladas literalmente. O resultado ainda depende do perfil de voz e do modelo Fish Audio; não é uma cópia exata da atuação original do anime.
+
+Para atualizar, feche o bot e substitua bot.mjs e tts_generate.py. Preserve seu .env e a pasta data.

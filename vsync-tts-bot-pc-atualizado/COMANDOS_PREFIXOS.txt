@@ -1,0 +1,45 @@
+VSync TTS — COMANDOS ! E /
+
+IMPORTANTE
+- Todos os comandos abaixo aceitam !tts e /tts digitado no chat.
+- Exemplo: !tts canal ver OU /tts canal ver.
+- Esta integração usa o gateway de mensagens da VSync. Prefixo / digitado no chat não é a mesma coisa que uma interação de barra nativa com autocomplete; a plataforma precisa oferecer endpoint de interações para isso.
+
+COMANDOS GERAIS
+!tts ajuda                  Mostrar ajuda
+!tts ping                   Testar se o bot responde
+!tts status                 Mostrar status da leitura e da voz
+!tts on / !tts off          Ligar/desligar leitura automática
+!tts entrar / !tts sair     Entrar/sair da call ocupada
+!tts teste [texto]          Fazer uma fala de teste
+!tts vozes                  Listar vozes
+!tts voz NOME               Definir a sua voz pessoal
+!tts voz-atual              Ver sua voz atual
+!tts voz padrao             Usar a voz padrão do servidor
+!tts voz aleatoria          Alternar aleatoriamente entre vozes
+
+CONFIGURAÇÕES DO SERVIDOR (DONO/ADMIN)
+!tts canal #canal            Ler apenas um canal
+!tts canal definir #canal    Alias para definir canal único
+!tts canal ver               Ver a restrição de canal
+!tts canal todos             Ler todos os canais
+!tts canal reset              Voltar ao TTS_TEXT_CHANNEL_ID do .env
+!tts voz-servidor NOME       Definir voz padrão do servidor
+!tts velocidade 1.25         Velocidade entre 1.00 e 1.50
+!tts limite 280              Máximo de caracteres (80 a 600)
+!tts fila                    Ver a fila de falas
+!tts fila limite 20          Tamanho de fila entre 3 e 80
+!tts limparfila              Limpar mensagens aguardando
+!tts fila limpar             Alias para limpar fila
+!tts config                  Mostrar configuração atual
+
+CARGOS (DONO/ADMIN)
+!tts cargos
+!tts permitir @Cargo
+!tts tirar @Cargo
+!tts bloquear @Cargo
+!tts desbloquear @Cargo
+!tts limpar permitidos
+!tts limpar bloqueados
+
+Atenção: se TTS_TEXT_CHANNEL_ID estiver definido no .env, !tts canal reset volta para esse canal. Use !tts canal todos para substituir essa limitação durante a execução.

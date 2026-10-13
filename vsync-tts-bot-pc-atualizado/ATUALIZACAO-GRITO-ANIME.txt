@@ -1,0 +1,16 @@
+GRITO ESTILO ANIME — EXPLOSÃO GALÁCTICA
+
+Quando o texto contém "Explosão Galáctica", o bot agora:
+- adiciona direção de voz dramática e crescente antes do clímax;
+- pede ao Fish Audio S2.1 um grito sustentado e de alta intensidade;
+- usa REST para esta fala, para enviar explicitamente as tags ao modelo;
+- aplica compressão e aumento de volume controlados só nesta fala, com limitador para reduzir distorção.
+
+As tags são instruções internas para o gerador de áudio e não devem ser lidas em voz alta.
+
+Para obter uma voz que combine com a cena, selecione também a voz do Saga de Gêmeos:
+!tts voz saga
+
+Isso busca uma interpretação mais próxima de uma cena de anime, mas não reproduz exatamente a atuação ou gravação original. O timbre, o grito e o resultado final dependem do perfil de voz e do modelo Fish Audio.
+
+Atualização: feche o bot e substitua bot.mjs e tts_generate.py. Mantenha .env e a pasta data.

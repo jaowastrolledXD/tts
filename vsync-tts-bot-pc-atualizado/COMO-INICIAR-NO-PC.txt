@@ -1,0 +1,58 @@
+VSync TTS — versão para Windows / PC
+
+1. Instale Node.js 20 ou mais recente, Python 3.10+ e FFmpeg.
+2. Copie .env.example para .env (se ainda não tiver um .env próprio).
+3. Abra .env e preencha VSYNC_BOT_TOKEN.
+4. Para todas as vozes Fish Audio (Mita, Nobara, Goldship e as 10 novas), coloque sua chave em FISH_API_KEY.
+5. Abra PowerShell ou CMD nesta pasta e rode uma vez:
+   npm.cmd install
+   python -m pip install -r requirements.txt
+   (No CMD, pode usar `npm install`.)
+6. Depois, inicie o bot clicando em start.bat. Ele verifica o SDK do Fish Audio e tenta instalar as dependências Python automaticamente se estiverem faltando. Se a instalação automática falhar, rode `python -m pip install -r requirements.txt` nesta pasta.
+
+Comandos de voz no chat:
+  !tts vozes
+  !tts voz mita
+  !tts voz nobara
+  !tts voz goldship
+  !tts voz brainrot
+  !tts voz toph
+  !tts voz yumeko
+  !tts voz saga
+  !tts voz miku
+  !tts voz kobayashi
+  !tts voz bolsonaro
+  !tts voz sukuna
+  !tts voz corazon
+  !tts voz tengen
+  !tts voz kaiser
+  !tts voz brasileira
+  !tts voz rick
+  !tts voz morty
+  !tts voz lhays
+  !tts voz padrao
+
+A preferência de voz é individual por usuário e por servidor.
+A voz Mita usa Fish Audio ID ea3bf7f7c7af4b59be4715013e1c4428.
+A voz Nobara usa Fish Audio ID 12beaca044c547bdbc90d346ce248798.
+A voz Goldship usa Fish Audio ID 4b7229e0fe634f8ab83eb6ba31f7c845.
+Outras vozes adicionadas: Brainrot, Toph Beifong, Yumeko, Saga de Gêmeos, Hatsune Miku, Kobayashi, Bolsonaro, Sukuna, Corazon, Narrador Tengen de JJK, Kaiser, voz brasileira, Rick e Morty.
+Lhays usa um proxy comunitário externo. Se algum serviço falhar, o bot tentará uma voz local do Windows.
+
+IMPORTANTE:
+- Não compartilhe seu arquivo .env. Ele contém o token e/ou API key.
+- Se já possui um bot configurado, preserve seu .env e a pasta data (especialmente data/config.json).
+- O áudio gerado fica em memória; o programa não guarda MP3/WAV temporários no disco.
+- As APIs e proxies externos podem falhar ou aplicar limites.
+
+Kaiser (Português BR) do link Fish Audio: comando !tts voz kaiser. O antigo comando !tts voz extra continua funcionando como alias.
+Esta versão usa limite de texto 280, velocidade 1.30x e fila 5 para reduzir atrasos. A Fish Audio ainda pode demorar conforme o serviço.
+
+
+ATUALIZAÇÃO DE BAIXA LATÊNCIA:
+- Esta versão transmite os blocos de áudio Fish Audio para a call enquanto são recebidos, sem esperar o áudio inteiro.
+- Depois de substituir os arquivos, rode novamente: python -m pip install -r requirements.txt
+- No .env, deixe FISH_TTS_STREAMING=1. A opção 0 desativa o streaming.
+- A latência depende da API, do modelo disponível na conta e da conexão.
+
+Vozes adicionais: !tts voz brasileira, !tts voz rick e !tts voz morty. Os nomes antigos fish18a9 e fish1e82 também continuam funcionando para Rick e Morty.
