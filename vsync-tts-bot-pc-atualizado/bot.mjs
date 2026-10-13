@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import WebSocket from 'ws';
 import wrtc from '@roamhq/wrtc';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -10,7 +10,16 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 const API = 'https://api.vsync.lat';
 const TOKEN = process.env.VSYNC_BOT_TOKEN;
-const PYTHON = process.env.PYTHON_PATH || (process.platform === 'win32' ? 'python' : 'python3');
+function resolvePython() {
+  const configured = String(process.env.PYTHON_PATH || '').trim();
+  const candidates = configured ? [configured] : (process.platform === 'win32' ? ['python', 'py'] : ['python3', 'python']);
+  for (const candidate of candidates) {
+    const result = spawnSync(candidate, ['--version'], { encoding: 'utf8', timeout: 3000, windowsHide: true });
+    if (!result.error && result.status === 0) return candidate;
+  }
+  return candidates[0];
+}
+const PYTHON = resolvePython();
 const FFMPEG = process.env.FFMPEG_PATH || 'ffmpeg';
 const TEXT_CHANNEL_ONLY = (process.env.TTS_TEXT_CHANNEL_ID || '').trim();
 const MAX_CHARS = Math.max(80, Math.min(600, Number(process.env.TTS_MAX_CHARS || 280)));
@@ -1754,6 +1763,10 @@ console.log(`Leitura automática: ativada${TEXT_CHANNEL_ONLY ? ` (somente canal 
 console.log(`Voz padrão: Francisca. Velocidade da fala: ${TTS_SPEED.toFixed(2)}x. Limite da fila: ${TTS_QUEUE_LIMIT}. Use !tts ajuda ou /tts ajuda para ver os comandos; !voz lista também funciona.`);
 console.log(`Saída automática da call: ${TTS_IDLE_LEAVE_MINUTES} minuto(s) sem mensagens de TTS.`);
 console.log(`[runtime] Python: ${PYTHON}; FFmpeg: ${FFMPEG}. Na Discloud, as dependências são instaladas pelo discloud.config.`);
+const pythonCheck = spawnSync(PYTHON, ['--version'], { encoding: 'utf8', timeout: 3000, windowsHide: true });
+if (pythonCheck.error || pythonCheck.status !== 0) {
+  console.warn('[runtime] Python não encontrado. Confira o BUILD do discloud.config; o TTS precisa de Python e requirements.txt instalados.');
+}
 console.log('[TTS] Vozes Fish Audio: requerem FISH_API_KEY; Lhays: proxy comunitário TikTok. Voz local do Windows é apenas fallback.');
 console.log('[ACL] A edição de whitelist/blacklist é permitida ao dono/admin do servidor; IDs no .env podem ser usados como exceção global.');
 console.log('Quando você mandar uma mensagem, procure a linha [chat] MESSAGE_CREATE no terminal.');
